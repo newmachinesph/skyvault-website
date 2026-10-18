@@ -1,0 +1,37 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Configuration {
+  id          String   @id @default(cuid())
+  cabType     String
+  cabSize     String
+  wallFinish  String
+  floorType   String
+  ceilingType String
+  handrail    String
+  lighting    String
+  mirror      String   @default("none")
+  options     String   @default("[]") // JSON array of selected option IDs
+  status      String   @default("new") // new, reviewed, quoted, archived
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  lead        Lead?
+}
+
+model Lead {
+  id              String        @id @default(cuid())
+  name            String
+  company         String
+  email           String
+  phone           String        @default("")
+  projectInfo     String        @default("")
+  configurationId String        @unique
+  configuration   Configuration @relation(fields: [configurationId], references: [id], onDelete: Cascade)
+  createdAt       DateTime      @default(now())
+}
